@@ -16,99 +16,119 @@
 
                 <!-- Left Column : XY + Step + View inside GroupBox -->
 
-                <GroupBox Header="Point View Controls" Grid.Column="0" Margin="5,5,5,0">
+                <GroupBox Header="Axis Controls" Grid.Column="0" Margin="5,5,5,0">
                     <Grid Margin="10">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <!-- LEFT COLUMN: XY, Step, Snap -->
                         <StackPanel Orientation="Vertical" Margin="5" Grid.Column="0">
-                            <!-- XYZ Input -->
-                            <StackPanel Orientation="Horizontal" Margin="5">
-                                <TextBlock Text="X:" VerticalAlignment="Center"/>
-                                <TextBox x:Name="txtX" Width="50" Text="0" Margin="5,0"/>
-                                <TextBlock Text="Y:" VerticalAlignment="Center"/>
-                                <TextBox x:Name="txtY" Width="50" Text="0" Margin="5,0"/>                                
+                            <StackPanel Orientation="Vertical" Margin="10">
+                                <!-- X Axis -->
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="25"/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="60"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="X:" VerticalAlignment="Center" Grid.Column="0"/>
+                                    <TextBox x:Name="txtMinX" Text="-10" Width="50" Margin="5,0" Grid.Column="1"/>
+                                    <Slider x:Name="sliderX" Minimum="-10" Maximum="10" Value="0" Margin="5,0" Grid.Column="2"/>
+                                    <TextBox x:Name="txtMaxX" Text="10" Width="50" Margin="5,0" Grid.Column="3"/>
+                                    <TextBlock Text="X Coordinates" VerticalAlignment="Center" Grid.Column="4"/>
+                                    <TextBox x:Name="txtX" Text="0" Width="50" Margin="5,0" Grid.Column="5"/>
+                                </Grid>
+
+                                <!-- Y Axis -->
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="25"/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="60"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="Y:" VerticalAlignment="Center" Grid.Column="0"/>
+                                    <TextBox x:Name="txtMinY" Text="-10" Width="50" Margin="5,0" Grid.Column="1"/>
+                                    <Slider x:Name="sliderY" Minimum="-10" Maximum="10" Value="0" Margin="5,0" Grid.Column="2"/>
+                                    <TextBox x:Name="txtMaxY" Text="10" Width="50" Margin="5,0" Grid.Column="3"/>
+                                    <TextBlock Text="Y Coordinates" VerticalAlignment="Center" Grid.Column="4"/>
+                                    <TextBox x:Name="txtY" Text="0" Width="50" Margin="5,0" Grid.Column="5"/>
+                                </Grid>
                             </StackPanel>
 
                             <!-- Step + Snap to Grid -->
-                            <StackPanel Orientation="Horizontal" Margin="5">
-                                <TextBlock Text="Step:" VerticalAlignment="Center"/>
-                                <TextBox x:Name="txtStep" Width="50" Text="1" Margin="5,0" />
-                                <CheckBox x:Name="chkSnap" Content="Snap to Grid" Margin="20,0,0,0" IsChecked="False"/>
-                            </StackPanel>
+                            
                         </StackPanel>
 
-                        <!-- RIGHT COLUMN: Sliders with Min/Max -->
-                        <StackPanel Orientation="Vertical" Margin="5" Grid.Column="1">
-
-                            <!-- Font Size -->
-                            <Grid Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="80"/>
-                                    <!-- Label -->
-                                    <ColumnDefinition Width="50"/>
-                                    <!-- Min -->
-                                    <ColumnDefinition Width="*"/>
-                                    <!-- Slider -->
-                                    <ColumnDefinition Width="50"/>
-                                    <!-- Max -->
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Font Size:" VerticalAlignment="Center" Grid.Column="0"/>
-                                <TextBox x:Name="txtFontMin" Grid.Column="1" Text="5" PreviewTextInput="NumberValidationTextBox" Margin="5,0"/>
-                                <Slider x:Name="sliderFontSize" Grid.Column="2" Minimum="5" Maximum="30" Value="12"
-                TickFrequency="1" IsSnapToTickEnabled="false" Margin="5,0"/>
-                                <TextBox x:Name="txtFontMax" Grid.Column="3" Text="30" PreviewTextInput="NumberValidationTextBox" Margin="5,0"/>
-                            </Grid>
-
-                            <!-- Point Size -->
-                            <Grid Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="80"/>
-                                    <!-- Label -->
-                                    <ColumnDefinition Width="50"/>
-                                    <!-- Min -->
-                                    <ColumnDefinition Width="*"/>
-                                    <!-- Slider -->
-                                    <ColumnDefinition Width="50"/>
-                                    <!-- Max -->
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Point Size:" VerticalAlignment="Center" Grid.Column="0"/>
-                                <TextBox x:Name="txtPointMin" Grid.Column="1" Text="0.1" PreviewTextInput="NumberValidationTextBox" Margin="5,0"/>
-                                <Slider x:Name="sliderPointSize" Grid.Column="2" Minimum="0.1" Maximum="1" Value="0.2"
-                TickFrequency="0.1" IsSnapToTickEnabled="false" Margin="5,0"/>
-                                <TextBox x:Name="txtPointMax" Grid.Column="3" Text="1" PreviewTextInput="NumberValidationTextBox" Margin="5,0"/>
-                            </Grid>
-
-                        </StackPanel>
+                        
                     </Grid>
                 </GroupBox>
 
 
                 <!-- Right Column : Axis Controls -->
-                <GroupBox Header="Axis Controls" Grid.Column="1" Margin="5,5,5,0">
-                    <StackPanel Orientation="Vertical" Margin="10">
-                        <!-- X Axis -->
-                        <StackPanel Orientation="Horizontal" Margin="5">
-                            <TextBlock Text="X:" Width="20" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtMinX" Width="50" Text="-10" VerticalAlignment="Center" Margin="5,0" />
-                            <Slider x:Name="sliderX" Width="200" Minimum="-10" Maximum="10" Value="0"
-                             Margin="5,0"/>
-                            <TextBox x:Name="txtMaxX" Width="50" Text="10" VerticalAlignment="Center" Margin="5,0" />
-                        </StackPanel>
+                <GroupBox Header="View Controls" Grid.Column="1" Margin="5,5,5,0">
+                    <!-- RIGHT COLUMN: Sliders with Min/Max -->
+                    <StackPanel Orientation="Vertical" Margin="5" Grid.Column="1">
 
-                        <!-- Y Axis -->
-                        <StackPanel Orientation="Horizontal" Margin="5">
-                            <TextBlock Text="Y:" Width="20" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtMinY" Width="50" Text="-10" VerticalAlignment="Center" Margin="5,0" />
-                            <Slider x:Name="sliderY" Width="200" Minimum="-10" Maximum="10" Value="0"
-                             Margin="5,0"/>
-                            <TextBox x:Name="txtMaxY" Width="50" Text="10" VerticalAlignment="Center" Margin="5,0" />
-                        </StackPanel>
+                        <!-- Font Size -->
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <!-- Label -->
+                                <ColumnDefinition Width="50"/>
+                                <!-- Min -->
+                                <ColumnDefinition Width="*"/>
+                                <!-- Slider -->
+                                <ColumnDefinition Width="50"/>
+                                <!-- Max -->
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Font Size:" VerticalAlignment="Center" Grid.Column="0"/>
+                            <TextBox x:Name="txtFontMin" Grid.Column="1" Text="5" PreviewTextInput="NumberValidationTextBox" Margin="5,0"/>
+                            <Slider x:Name="sliderFontSize" Grid.Column="2" Minimum="5" Maximum="30" Value="12"
+TickFrequency="1" IsSnapToTickEnabled="false" Margin="5,0"/>
+                            <TextBox x:Name="txtFontMax" Grid.Column="3" Text="30" PreviewTextInput="NumberValidationTextBox" Margin="5,0"/>
+                        </Grid>
+
+                        <!-- Point Size -->
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <!-- Label -->
+                                <ColumnDefinition Width="50"/>
+                                <!-- Min -->
+                                <ColumnDefinition Width="*"/>
+                                <!-- Slider -->
+                                <ColumnDefinition Width="50"/>
+                                <!-- Max -->
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Point Size:" VerticalAlignment="Center" Grid.Column="0"/>
+                            <TextBox x:Name="txtPointMin" Grid.Column="1" Text="0.1" PreviewTextInput="NumberValidationTextBox" Margin="5,0"/>
+                            <Slider x:Name="sliderPointSize" Grid.Column="2" Minimum="0.1" Maximum="1" Value="0.2"
+TickFrequency="0.1" IsSnapToTickEnabled="false" Margin="5,0"/>
+                            <TextBox x:Name="txtPointMax" Grid.Column="3" Text="1" PreviewTextInput="NumberValidationTextBox" Margin="5,0"/>
+                        </Grid>
+                        <!-- Step + Snap -->
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Step:" VerticalAlignment="Center" Grid.Column="0"/>
+                            <TextBox x:Name="txtStep" Width="50" Text="1" Margin="5,0" Grid.Column="1"/>
+                            <CheckBox x:Name="chkSnap" Content="Snap to Grid" Margin="20,0,0,0" Grid.Column="2"/>
+                        </Grid>
                     </StackPanel>
                 </GroupBox>
             </Grid>
