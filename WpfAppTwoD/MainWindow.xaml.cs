@@ -374,7 +374,10 @@ namespace WpfAppTwoD
                 isUpdatingUI = true;
 
                 txtX.Text = pointerX.ToString("0.###");
+                txtX.CaretIndex = txtX.Text.Length; // ✅ Move cursor after text
+
                 txtY.Text = pointerY.ToString("0.###");
+                txtY.CaretIndex = txtY.Text.Length; // ✅ Move cursor after text
 
                 sliderX.Value = pointerX;
                 sliderY.Value = pointerY;
