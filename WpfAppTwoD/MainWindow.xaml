@@ -29,7 +29,7 @@
                                     <Slider x:Name="sliderX" Width="300" Minimum="-10" Maximum="10" Value="0" Margin="5,0"/>
                                     <TextBox x:Name="txtMaxX" Width="50" Text="10" VerticalAlignment="Center" Margin="5,0" />
                                     <TextBlock Text="X Coordinates:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtX" Width="50" Text="0" Margin="5,0"/>
+                                    <TextBox x:Name="txtX" Width="50" Text="0" Margin="5,0" PreviewTextInput="NumberValidationTextBox"/>
                                 </StackPanel>
 
                                 <!-- Y Axis -->
@@ -40,7 +40,7 @@
                                     <Slider x:Name="sliderY" Width="300" Minimum="-10" Maximum="10" Value="0" Margin="5,0"/>
                                     <TextBox x:Name="txtMaxY" Width="50" Text="10" VerticalAlignment="Center" Margin="5,0" />
                                     <TextBlock Text="Y Coordinates:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtY" Width="50" Text="0" Margin="5,0"/>
+                                    <TextBox x:Name="txtY" Width="50" Text="0" Margin="5,0" PreviewTextInput="NumberValidationTextBox"/>
                                 </StackPanel>
 
                             </StackPanel>

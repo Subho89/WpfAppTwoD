@@ -371,6 +371,11 @@ namespace WpfAppTwoD
 
             if (updateUI && !isUpdatingUI)
             {
+                // Skip updating if user is in the middle of typing incomplete number
+                if (txtX.Text.EndsWith(".") || txtX.Text == "-" ||
+                    txtY.Text.EndsWith(".") || txtY.Text == "-")
+                    return;
+
                 isUpdatingUI = true;
 
                 txtX.Text = pointerX.ToString("0.###");
@@ -562,8 +567,17 @@ namespace WpfAppTwoD
         {
             if (isUpdatingUI) return;
 
-            if (double.TryParse(txtX.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double x) &&
-                double.TryParse(txtY.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out double y))
+            TextBox tb = sender as TextBox;
+            if (tb == null) return;
+
+            string text = tb.Text;
+
+            // Allow intermediate input states
+            if (string.IsNullOrEmpty(text) || text == "-" || text.EndsWith("."))
+                return;
+
+            if (double.TryParse(txtX.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double x) &&
+                double.TryParse(txtY.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double y))
             {
                 MovePointerTo(x, y, false);
             }
@@ -607,7 +621,20 @@ namespace WpfAppTwoD
         // For numeric-only inputs
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !double.TryParse(((TextBox)sender).Text + e.Text, out _);
+            //e.Handled = !double.TryParse(((TextBox)sender).Text + e.Text, out _);
+
+            string currentText = ((TextBox)sender).Text;
+            string newText = currentText.Insert(((TextBox)sender as TextBox).SelectionStart, e.Text);
+
+            // Allow empty, "-", ".", "-.", "0.", "1.", etc.
+            if (string.IsNullOrEmpty(newText) || newText == "-" || newText == "." || newText == "-." || newText.EndsWith("."))
+            {
+                e.Handled = false;
+                return;
+            }
+
+            // Final check with parsing
+            e.Handled = !double.TryParse(newText, NumberStyles.Float, CultureInfo.InvariantCulture, out _);
         }        
 
     }
