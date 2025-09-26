@@ -22,49 +22,51 @@
                         <StackPanel Orientation="Vertical" Margin="5">
                             <StackPanel Orientation="Vertical" Margin="10">
 
-                                <!-- X Axis -->
-                                <StackPanel Orientation="Horizontal" Margin="5">
-                                    <Button Content="..." Width="25" Height="22" Margin="0,0,12,0"
+                                    <!-- X Axis -->
+                                    <StackPanel Orientation="Horizontal" Margin="5">
+                                        <Button Content="..." Width="25" Height="22" Margin="0,0,12,0"
 VerticalAlignment="Center" Click="BtnSetXRange_Click"/>
-                                    <TextBlock Text="X:" Width="20" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtMinX" Width="50" Text="-10" VerticalAlignment="Center" Margin="5,0"
- PreviewTextInput="NumberValidationTextBox" />
-                                    <Slider x:Name="sliderX" Width="300" Minimum="-10" Maximum="10" Value="0" Margin="5,0"/>
-                                    <TextBox x:Name="txtMaxX" Width="50" Text="10" VerticalAlignment="Center" Margin="5,0"
- PreviewTextInput="NumberValidationTextBox" />
-                                    <TextBlock Text="X Value:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtX" Width="50" Text="0" Margin="5,0"
- PreviewTextInput="NumberValidationTextBox" />
-                                    <TextBlock Text="X Expression:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtXExp" Width="80" Text="" Margin="5,0" IsReadOnly="True"/>
-                                    <TextBlock Text="X Coordinates:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtCoordinateX" Width="80" Text="0" Margin="5,0" IsReadOnly="True"/>
-                                    <TextBlock Text="Step X:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtStepX" Width="80" Text="1" Margin="5,0" IsReadOnly="True"/>
-                                </StackPanel>
+                                        <TextBlock Text="X:" Width="20" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtMinX" Width="50" Text="-10" VerticalAlignment="Center" Margin="5,0"
+ PreviewTextInput="NumberValidationTextBox" IsReadOnly="True" />
+                                        <Slider x:Name="sliderX" Width="300" Minimum="-10" Maximum="10" Value="0" Margin="5,0"/>
+                                        <TextBox x:Name="txtMaxX" Width="50" Text="10" VerticalAlignment="Center" Margin="5,0"
+ PreviewTextInput="NumberValidationTextBox" IsReadOnly="True" />
+                                        <TextBlock Text="X Value:" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtX" Width="50" Text="0" Margin="5,0"
+ PreviewTextInput="NumberValidationTextBox" DataObject.Pasting="TextBox_Pasting"/>
+                                        <TextBlock Text="X Expression:" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtXExp" Width="80" Text="" Margin="5,0" IsReadOnly="True" Background="LightYellow" Foreground="Black" BorderBrush="Gray"/>
+                                        <TextBlock Text="X Expression Values:" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtCoordinateX" Width="80" Text="0" Margin="5,0" IsReadOnly="True" Background="BurlyWood" Foreground="Black" BorderBrush="Gray"/>
+                                        <TextBlock Text="Step X:" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtStepX" Width="80" Text="1" Margin="5,0" IsReadOnly="True"/>
+                                        <CheckBox x:Name="chkSnapToGridX" Content="Snap to Grid X Axis" Margin="20,0,0,0" IsChecked="False"/>
+                                    </StackPanel>
 
-                                <!-- Y Axis -->
-                                <StackPanel Orientation="Horizontal" Margin="5">
-                                    <Button Content="..." Width="25" Height="22" Margin="0,0,12,0"
+                                    <!-- Y Axis -->
+                                    <StackPanel Orientation="Horizontal" Margin="5">
+                                        <Button Content="..." Width="25" Height="22" Margin="0,0,12,0"
 VerticalAlignment="Center" Click="BtnSetYRange_Click"/>
-                                    <TextBlock Text="Y:" Width="20" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtMinY" Width="50" Text="-10" VerticalAlignment="Center" Margin="5,0"
+                                        <TextBlock Text="Y:" Width="20" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtMinY" Width="50" Text="-10" VerticalAlignment="Center" Margin="5,0"
+ PreviewTextInput="NumberValidationTextBox" IsReadOnly="True" />
+                                        <Slider x:Name="sliderY" Width="300" Minimum="-10" Maximum="10" Value="0" Margin="5,0"/>
+                                        <TextBox x:Name="txtMaxY" Width="50" Text="10" VerticalAlignment="Center" Margin="5,0"
+ PreviewTextInput="NumberValidationTextBox" IsReadOnly="True" />
+                                        <TextBlock Text="Y Value:" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtY" Width="50" Text="0" Margin="5,0"
  PreviewTextInput="NumberValidationTextBox"/>
-                                    <Slider x:Name="sliderY" Width="300" Minimum="-10" Maximum="10" Value="0" Margin="5,0"/>
-                                    <TextBox x:Name="txtMaxY" Width="50" Text="10" VerticalAlignment="Center" Margin="5,0"
- PreviewTextInput="NumberValidationTextBox"/>
-                                    <TextBlock Text="Y Value:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtY" Width="50" Text="0" Margin="5,0"
- PreviewTextInput="NumberValidationTextBox"/>
-                                    <TextBlock Text="Y Expression:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtYExp" Width="80" Text="" Margin="5,0" IsReadOnly="True"/>
-                                    <TextBlock Text="Y Coordinates:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtCoordinateY" Width="80" Text="0" Margin="5,0" IsReadOnly="True"/>
-                                    <TextBlock Text="Step Y:" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtStepY" Width="80" Text="1" Margin="5,0" IsReadOnly="True"/>
-                                </StackPanel>
+                                        <TextBlock Text="Y Expression:" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtYExp" Width="80" Text="" Margin="5,0" IsReadOnly="True" Background="LightYellow" Foreground="Black" BorderBrush="Gray"/>
+                                        <TextBlock Text="Y Expression Values:" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtCoordinateY" Width="80" Text="0" Margin="5,0" IsReadOnly="True" Background="BurlyWood" Foreground="Black" BorderBrush="Gray"/>
+                                        <TextBlock Text="Step Y:" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtStepY" Width="80" Text="1" Margin="5,0" IsReadOnly="True"/>
+                                        <CheckBox x:Name="chkSnapToGridY" Content="Snap to Grid Y Axis" Margin="20,0,0,0" IsChecked="False"/>
+                                    </StackPanel>
 
-                            </StackPanel>
+                                </StackPanel>
                         </StackPanel>
                     </Grid>
                     </ScrollViewer>
@@ -138,6 +140,7 @@ VerticalAlignment="Center" Click="BtnSetYRange_Click"/>
 
         <!-- Graph area -->
         <Grid Margin="10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <Canvas x:Name="graphCanvas" Background="White"
                     Focusable="True"
                     MouseLeftButtonDown="GraphCanvas_MouseLeftButtonDown"
@@ -145,6 +148,7 @@ VerticalAlignment="Center" Click="BtnSetYRange_Click"/>
                     MouseLeftButtonUp="GraphCanvas_MouseLeftButtonUp"
                     SizeChanged="GraphCanvas_SizeChanged"
                     MouseWheel="GraphCanvas_MouseWheel"/>
+            </ScrollViewer>
         </Grid>
     </DockPanel>
 </Window>

@@ -1,31 +1,33 @@
 ﻿<Window x:Class="WpfAppTwoD.RangeDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Range Settings" Height="437" Width="667"
+        Title="Range Settings" Height="489" Width="704"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- 0: Slider accuracy -->
+            <!-- Slider accuracy -->
             <RowDefinition Height="Auto"/>
-            <!-- 1: Rounding -->
+            <!-- Rounding -->
             <RowDefinition Height="Auto"/>
-            <!-- 2: Digits -->
+            <!-- Digits -->
             <RowDefinition Height="Auto"/>
-            <!-- 3: Min/Max -->
+            <!-- Min/Max -->
             <RowDefinition Height="Auto"/>
-            <!-- 4: Step -->
+            <!-- Step -->
+            <RowDefinition Height="Auto"/>
+            <!-- Expression -->
+            <RowDefinition Height="Auto"/>
+            <!-- Interpretation -->
             <RowDefinition Height="*"/>
-            <!-- 5: Expression -->
+            <!-- Spacer -->
             <RowDefinition Height="Auto"/>
-            <!-- 6: Interpretation -->
-            <RowDefinition Height="Auto"/>
-            <!-- 7: Buttons -->
+            <!-- Buttons -->
         </Grid.RowDefinitions>
 
         <!-- Slider accuracy -->
-        <TextBlock Text="Slider accuracy" FontWeight="Bold"/>
+        <TextBlock Text="Slider accuracy" FontWeight="Bold" Grid.Row="0"/>
 
         <!-- Rounding Options -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Center">
@@ -39,51 +41,61 @@
         <!-- Digits Slider -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0" VerticalAlignment="Center">
             <TextBlock Text="Digits" Width="100" VerticalAlignment="Center"/>
-            <Slider x:Name="sliderDigits" Minimum="0" Maximum="10" Value="3" Width="200" IsEnabled="False"/>
-            <TextBox x:Name="txtDigits" 
-                     Text="{Binding ElementName=sliderDigits, Path=Value, Mode=TwoWay}" 
-                     Width="40" Margin="5,0,0,0" HorizontalContentAlignment="Center"/>
+            <Slider x:Name="sliderDigits" Minimum="0" Maximum="6" Value="3" Width="200" TickFrequency="1" IsSnapToTickEnabled="True"/>
+            <TextBox x:Name="txtDigits" Text="{Binding ElementName=sliderDigits, Path=Value, Mode=TwoWay}" Width="40" Margin="5,0,0,0" HorizontalContentAlignment="Center" IsReadOnly="True"/>
         </StackPanel>
 
         <!-- Min/Max Values -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,15,0,0" VerticalAlignment="Center">
             <TextBlock Text="Min:" Width="50" VerticalAlignment="Center"/>
-            <TextBox x:Name="MinValueBox" Width="100" Margin="5,0" 
-                     TextChanged="MinValueBox_TextChanged" 
-                     PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+            <TextBox x:Name="MinValueBox" Width="100" Margin="5,0" PreviewTextInput="NumericTextBox_PreviewTextInput" LostFocus="MinValueBox_LostFocus"/>
             <TextBlock Text="Max:" Width="50" Margin="15,0,0,0" VerticalAlignment="Center"/>
-            <TextBox x:Name="MaxValueBox" Width="100" Margin="5,0" 
-                     TextChanged="MaxValueBox_TextChanged" 
-                     PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+            <TextBox x:Name="MaxValueBox" Width="100" Margin="5,0" PreviewTextInput="NumericTextBox_PreviewTextInput" LostFocus="MaxValueBox_LostFocus"/>
         </StackPanel>
 
         <!-- Step Value -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,15,0,0" VerticalAlignment="Center">
             <TextBlock Text="Step:" Width="50" VerticalAlignment="Center"/>
-            <TextBox x:Name="txtStep" Width="100" Margin="5,0" 
-                     PreviewTextInput="TxtStep_PreviewTextInput" DataObject.Pasting="TxtStep_Pasting"/>
+            <TextBox x:Name="txtStep" 
+         Width="100" 
+         Margin="5,0" 
+         PreviewTextInput="TxtStep_PreviewTextInput" 
+         DataObject.Pasting="TxtStep_Pasting" 
+         LostFocus="txtStep_LostFocus">
+                <TextBox.ToolTip>
+                    <TextBlock TextWrapping="Wrap" 
+                   Width="250" 
+                   Foreground="DarkSlateGray"
+                   Text="Step entry shall override certain assumptions made for various settings of rounding."/>
+                </TextBox.ToolTip>
+            </TextBox>
         </StackPanel>
 
         <!-- Expression Input -->
         <StackPanel Grid.Row="5" Orientation="Vertical" Margin="0,20,0,0">
             <TextBlock x:Name="lblExpression" Text="Expression" FontWeight="Bold"/>
             <TextBox x:Name="txtExpression" Height="28" Margin="0,5,0,0"/>
-            <TextBlock Text="Expression to enable mathematical operations. The results shall be visible in the Coordinate text box"
+            <TextBlock Text="Expression to enable mathematical operations. Results are visible in the Coordinate text box."
                        TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="0,5,0,0"/>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <TextBlock Text="Expression Digits" Width="100" VerticalAlignment="Center"/>
+                <Slider x:Name="sliderExpression" Minimum="0" Maximum="6" Value="3" Width="200" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                <TextBox x:Name="txtExpressionDigits" Text="{Binding ElementName=sliderExpression, Path=Value, Mode=TwoWay}" Width="40" Margin="5,0,0,0" HorizontalContentAlignment="Center" IsReadOnly="True"/>
+            </StackPanel>
         </StackPanel>
 
         <!-- Interpretation Section -->
         <TextBlock Grid.Row="6" Margin="0,10,0,0" TextWrapping="Wrap" FontSize="12" Foreground="DarkGoldenrod">
-            <Run Text="R means floating point numbers. Digits slider is only active when this option is selected."/><LineBreak/>
-            <Run Text="N means integers"/><LineBreak/>
-            <Run Text="E means Even"/><LineBreak/>
-            <Run Text="O means Odd"/><LineBreak/>
-            <Bold>Interpretation:</Bold>
-            <Run Text=" These will alter the type of numbers that can be entered in Min and Max."/>
+            <Run Text="Digits Slider is only active when this option is selected."/><LineBreak/>
+            <Run Text="R - Floating Point Number"/><LineBreak/>
+            <Run Text="N - Integer"/><LineBreak/>
+            <Run Text="E - Even"/><LineBreak/>
+            <Run Text="O - Odd"/>
         </TextBlock>
 
+
         <!-- Buttons -->
-        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+        <StackPanel Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
             <Button Content="OK" Width="80" Margin="5" IsDefault="True" Click="Ok_Click"/>
             <Button Content="Cancel" Width="80" Margin="5" IsCancel="True"/>
         </StackPanel>

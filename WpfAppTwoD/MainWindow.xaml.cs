@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,6 +29,13 @@ namespace WpfAppTwoD
 
         private Line guideLineX;
         private Line guideLineY;
+
+        RangeVM rangeX = new RangeVM();
+        RangeVM rangeY = new RangeVM();
+        public int decimalX;
+        public int decimalY;
+        public int expressionX;
+        public int expressionY;
 
         private readonly List<TextBlock> tickLabels = new();
 
@@ -81,6 +89,7 @@ namespace WpfAppTwoD
             txtPointMin.TextChanged += PointSize_TextChanged;
             txtPointMax.TextChanged += PointSize_TextChanged;
             sliderPointSize.ValueChanged += SliderPointSize_ValueChanged;
+            graphCanvas.PreviewMouseWheel += GraphCanvas_MouseWheel;
         }
 
         private void InitializeGraph()
@@ -112,6 +121,35 @@ namespace WpfAppTwoD
             }
 
             MovePointerTo(0, 0, true);
+        }
+
+        private void GraphCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            double zoomFactor = 1.1; // 10% zoom per wheel step
+
+            if (e.Delta > 0) // zoom in
+            {
+                double dx = (xMax - xMin) / zoomFactor / 2;
+                double dy = (yMax - yMin) / zoomFactor / 2;
+
+                xMin += dx;
+                xMax -= dx;
+                yMin += dy;
+                yMax -= dy;
+            }
+            else // zoom out
+            {
+                double dx = (xMax - xMin) * (zoomFactor - 1) / 2;
+                double dy = (yMax - yMin) * (zoomFactor - 1) / 2;
+
+                xMin -= dx;
+                xMax += dx;
+                yMin -= dy;
+                yMax += dy;
+            }
+
+            DrawGrid();
+            MovePointerTo(pointerX, pointerY, true);
         }
 
         private void ParseGridInputs()
@@ -319,10 +357,85 @@ namespace WpfAppTwoD
             return new Point(left + pointer.Width / 2, top + pointer.Height / 2);
         }
 
+        //private void MovePointerTo(double xCoord, double yCoord, bool updateUI)
+        //{
+        //    pointerX = Math.Max(xMin, Math.Min(xMax, xCoord));
+        //    pointerY = Math.Max(yMin, Math.Min(yMax, yCoord));
+
+        //    double w = graphCanvas.ActualWidth;
+        //    double h = graphCanvas.ActualHeight;
+        //    if (w <= 0 || h <= 0) return;
+
+        //    double xScale = w / (xMax - xMin);
+        //    double yScale = h / (yMax - yMin);
+
+        //    double px = (pointerX - xMin) * xScale;
+        //    double py = h - (pointerY - yMin) * yScale;
+
+        //    Canvas.SetLeft(pointer, px - pointer.Width / 2);
+        //    Canvas.SetTop(pointer, py - pointer.Height / 2);
+
+        //    if (coordLabelText != null)
+        //        coordLabelText.Text = $"({pointerX:0.###}, {pointerY:0.###})";
+
+        //    coordLabelBorder.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        //    Size desired = coordLabelBorder.DesiredSize;
+
+        //    double lblLeft = px + pointerRadius + 6;
+        //    double lblTop = py - pointerRadius - 6 - desired.Height;
+
+        //    if (lblLeft + desired.Width > w)
+        //        lblLeft = px - pointerRadius - 6 - desired.Width;
+        //    if (lblLeft < 0)
+        //        lblLeft = 2;
+
+        //    if (lblTop < 0)
+        //        lblTop = py + pointerRadius + 6;
+        //    if (lblTop + desired.Height > h)
+        //        lblTop = Math.Max(2, h - desired.Height - 2);
+
+        //    Canvas.SetLeft(coordLabelBorder, lblLeft);
+        //    Canvas.SetTop(coordLabelBorder, lblTop);
+
+        //    if (guideLineX != null && guideLineY != null)
+        //    {
+        //        guideLineX.X1 = 0;
+        //        guideLineX.X2 = w;
+        //        guideLineX.Y1 = guideLineX.Y2 = py;
+
+        //        guideLineY.Y1 = 0;
+        //        guideLineY.Y2 = h;
+        //        guideLineY.X1 = guideLineY.X2 = px;
+        //    }
+
+        //    if (updateUI && !isUpdatingUI)
+        //    {
+        //        // Skip updating if user is in the middle of typing incomplete number
+        //        if (txtX.Text.EndsWith(".") || txtX.Text == "-" ||
+        //            txtY.Text.EndsWith(".") || txtY.Text == "-")
+        //            return;
+
+        //        isUpdatingUI = true;
+
+        //        txtX.Text = pointerX.ToString("0.###");
+        //        txtX.CaretIndex = txtX.Text.Length; // ✅ Move cursor after text
+
+        //        txtY.Text = pointerY.ToString("0.###");
+        //        txtY.CaretIndex = txtY.Text.Length; // ✅ Move cursor after text
+
+        //        sliderX.Value = pointerX;
+        //        sliderY.Value = pointerY;
+
+        //        isUpdatingUI = false;
+        //    }
+        //}
+
+
         private void MovePointerTo(double xCoord, double yCoord, bool updateUI)
         {
-            pointerX = Math.Max(xMin, Math.Min(xMax, xCoord));
-            pointerY = Math.Max(yMin, Math.Min(yMax, yCoord));
+            // store real evaluated coordinates (no clamping)
+            pointerX = xCoord;
+            pointerY = yCoord;
 
             double w = graphCanvas.ActualWidth;
             double h = graphCanvas.ActualHeight;
@@ -331,6 +444,7 @@ namespace WpfAppTwoD
             double xScale = w / (xMax - xMin);
             double yScale = h / (yMax - yMin);
 
+            // map coords to canvas — can go negative or > canvas
             double px = (pointerX - xMin) * xScale;
             double py = h - (pointerY - yMin) * yScale;
 
@@ -346,19 +460,10 @@ namespace WpfAppTwoD
             double lblLeft = px + pointerRadius + 6;
             double lblTop = py - pointerRadius - 6 - desired.Height;
 
-            if (lblLeft + desired.Width > w)
-                lblLeft = px - pointerRadius - 6 - desired.Width;
-            if (lblLeft < 0)
-                lblLeft = 2;
-
-            if (lblTop < 0)
-                lblTop = py + pointerRadius + 6;
-            if (lblTop + desired.Height > h)
-                lblTop = Math.Max(2, h - desired.Height - 2);
-
             Canvas.SetLeft(coordLabelBorder, lblLeft);
             Canvas.SetTop(coordLabelBorder, lblTop);
 
+            // guide lines can still be drawn — even if off-screen
             if (guideLineX != null && guideLineY != null)
             {
                 guideLineX.X1 = 0;
@@ -372,7 +477,6 @@ namespace WpfAppTwoD
 
             if (updateUI && !isUpdatingUI)
             {
-                // Skip updating if user is in the middle of typing incomplete number
                 if (txtX.Text.EndsWith(".") || txtX.Text == "-" ||
                     txtY.Text.EndsWith(".") || txtY.Text == "-")
                     return;
@@ -380,25 +484,25 @@ namespace WpfAppTwoD
                 isUpdatingUI = true;
 
                 txtX.Text = pointerX.ToString("0.###");
-                txtX.CaretIndex = txtX.Text.Length; // ✅ Move cursor after text
-
                 txtY.Text = pointerY.ToString("0.###");
-                txtY.CaretIndex = txtY.Text.Length; // ✅ Move cursor after text
+                txtX.CaretIndex = txtX.Text.Length;
+                txtY.CaretIndex = txtY.Text.Length;
 
-                sliderX.Value = pointerX;
-                sliderY.Value = pointerY;
+                // sliders stay clamped, because they only represent visible graph range
+                sliderX.Value = Math.Max(xMin, Math.Min(xMax, pointerX));
+                sliderY.Value = Math.Max(yMin, Math.Min(yMax, pointerY));
 
                 isUpdatingUI = false;
             }
         }
 
-        private void GraphCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            double factor = (e.Delta > 0) ? 0.8 : 1.25;
+        //private void GraphCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        //{
+        //    double factor = (e.Delta > 0) ? 0.8 : 1.25;
 
-            // zoom around the center of the current view
-            Zoom(factor, new Point((xMin + xMax) / 2, (yMin + yMax) / 2));
-        }
+        //    // zoom around the center of the current view
+        //    Zoom(factor, new Point((xMin + xMax) / 2, (yMin + yMax) / 2));
+        //}
 
         private void Zoom(double zoomFactor, Point center)
         {
@@ -638,72 +742,160 @@ namespace WpfAppTwoD
             e.Handled = !double.TryParse(newText, NumberStyles.Float, CultureInfo.InvariantCulture, out _);
         }
 
+        private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string pastedText = (string)e.DataObject.GetData(typeof(string));
+                TextBox textBox = sender as TextBox;
+
+                string newText = textBox.Text.Insert(textBox.CaretIndex, pastedText);
+                Regex regex = new Regex(@"^-?\d*(\.\d{0,6})?$");
+
+                if (!regex.IsMatch(newText))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
         private void BtnSetXRange_Click(object sender, RoutedEventArgs e)
         {
             if (double.TryParse(txtMinX.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double min) &&
                 double.TryParse(txtMaxX.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double max))
             {
-                var dlg = new RangeDialog(min, max, Convert.ToDouble(txtStepX.Text), "X") { Owner = this };
+                if (rangeX == null)
+                    rangeX = new RangeVM();
+
+                rangeX.axis = "X";
+                rangeX.min = txtMinX.Text;
+                rangeX.max = txtMaxX.Text;
+                rangeX.expression = txtXExp.Text;
+                rangeX.step = string.IsNullOrWhiteSpace(txtStepX.Text) ? step : Convert.ToDouble(txtStepX.Text);
+
+                var dlg = new RangeDialog(rangeX) { Owner = this };
                 if (dlg.ShowDialog() == true)
                 {
-                    // Update min/max values
+                    // Update min/max values from dialog
                     txtMinX.Text = dlg.MinValue.ToString(CultureInfo.InvariantCulture);
                     txtMaxX.Text = dlg.MaxValue.ToString(CultureInfo.InvariantCulture);
-                    sliderX.Minimum = dlg.MinValue;
-                    sliderX.Maximum = dlg.MaxValue;
+                    sliderX.Minimum = Convert.ToDouble(dlg.MinValue);
+                    sliderX.Maximum = Convert.ToDouble(dlg.MaxValue);
+
                     txtXExp.Text = dlg.Expression;
                     txtStepX.Text = dlg.step.ToString(CultureInfo.InvariantCulture);
+
+                    // Save range settings
+                    rangeX.axis = "X";
+                    rangeX.min = txtMinX.Text;
+                    rangeX.max = txtMaxX.Text;
+                    rangeX.expression = txtXExp.Text;
+                    rangeX.step = dlg.step;
+                    rangeX.roundingDigits = dlg.Digits;
+                    rangeX.rounding = dlg.rounding;
+                    rangeX.expressionDigits = dlg.expressionDigit;
+
+                    if (rangeX.rounding == 0)
+                    {
+                        decimalX = rangeX.roundingDigits;
+                    }
+                    else if (rangeX.rounding == 2 || rangeX.rounding == 3)
+                    {
+                        chkSnapToGridX.IsChecked = true;
+                        decimalX = 0;
+                    }
+                    else
+                    {
+                        decimalX = 0;
+                    }
+
+                    expressionX = rangeX.expressionDigits;
+
+                    // Redraw grid
                     DrawGrid();
-                    // Save rounding / digits / expression
-                    ApplyRangeSettings("X", dlg);
 
-                    // Get current coordinates
-                    double x = pointerX;
-                    double y = pointerY;
-
-
-                    // Apply the expression immediately
+                    // Apply expressions if needed
                     ApplyExpressionToX();
-                    x = Convert.ToDouble(txtCoordinateX.Text);
-                    // Update the pointer
-                    MovePointerTo(x, y, false);
-                    //UpdateSphereLabel(new Point3D(x, y, z));
+                    ApplyExpressionToY();
+
+                    // Update pointer
+                    if (double.TryParse(txtX.Text, out double newX) &&
+                        double.TryParse(txtY.Text, out double newY))
+                    {
+                        MovePointerTo(newX, newY, true);
+                    }
                 }
             }
         }
+
 
         private void BtnSetYRange_Click(object sender, RoutedEventArgs e)
         {
             if (double.TryParse(txtMinY.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double min) &&
                 double.TryParse(txtMaxY.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double max))
             {
-                var dlg = new RangeDialog(min, max, Convert.ToDouble(txtStepY.Text), "Y") { Owner = this };
+                if (rangeY == null)
+                    rangeY = new RangeVM();
+
+                rangeY.axis = "Y";
+                rangeY.min = txtMinY.Text;
+                rangeY.max = txtMaxY.Text;
+                rangeY.expression = txtYExp.Text;
+                rangeY.step = string.IsNullOrWhiteSpace(txtStepY.Text) ? step : Convert.ToDouble(txtStepY.Text);
+
+                var dlg = new RangeDialog(rangeY) { Owner = this };
                 if (dlg.ShowDialog() == true)
                 {
-                    // Update min/max values
                     txtMinY.Text = dlg.MinValue.ToString(CultureInfo.InvariantCulture);
                     txtMaxY.Text = dlg.MaxValue.ToString(CultureInfo.InvariantCulture);
-                    sliderY.Minimum = dlg.MinValue;
-                    sliderY.Maximum = dlg.MaxValue;
+                    sliderY.Minimum = Convert.ToDouble(dlg.MinValue);
+                    sliderY.Maximum = Convert.ToDouble(dlg.MaxValue);
+
                     txtYExp.Text = dlg.Expression;
                     txtStepY.Text = dlg.step.ToString(CultureInfo.InvariantCulture);
+
+                    rangeY.axis = "Y";
+                    rangeY.min = txtMinY.Text;
+                    rangeY.max = txtMaxY.Text;
+                    rangeY.expression = txtYExp.Text;
+                    rangeY.step = dlg.step;
+                    rangeY.roundingDigits = dlg.Digits;
+                    rangeY.rounding = dlg.rounding;
+                    rangeY.expressionDigits = dlg.expressionDigit;
+
+                    if (rangeY.rounding == 0)
+                    {
+                        decimalY = rangeY.roundingDigits;
+                    }
+                    else if (rangeY.rounding == 2 || rangeY.rounding == 3)
+                    {
+                        chkSnapToGridY.IsChecked = true;
+                        decimalY = 0;
+                    }
+                    else
+                    {
+                        decimalY = 0;
+                    }
+
+                    expressionY = rangeY.expressionDigits;
+
                     DrawGrid();
-                    // Save rounding / digits / expression
-                    ApplyRangeSettings("Y", dlg);
-
-                    // Get current coordinates
-                    double x = pointerX;
-                    double y = pointerY;
-
-
-                    // Apply the expression immediately
+                    ApplyExpressionToX();
                     ApplyExpressionToY();
-                    y = Convert.ToDouble(txtCoordinateY.Text);
-                    // Update the pointer
-                    MovePointerTo(x, y, false);
+
+                    if (double.TryParse(txtX.Text, out double newX) &&
+                        double.TryParse(txtY.Text, out double newY))
+                    {
+                        MovePointerTo(newX, newY, true);
+                    }
                 }
             }
         }
+
 
         private void ApplyRangeSettings(string axis, RangeDialog dlg)
         {
